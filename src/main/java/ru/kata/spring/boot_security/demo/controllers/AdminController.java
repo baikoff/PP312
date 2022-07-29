@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.service.UserService;
+import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
 import java.security.Principal;
 
@@ -12,34 +12,34 @@ import java.security.Principal;
 @RequestMapping("/")
 public class AdminController {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
-      public AdminController(UserService userService) {
+    public AdminController(UserServiceImpl userService) {
         this.userService = userService;
     }
 
     @GetMapping("user")
     public String index(Principal principal, Model model) {
-        User user = userService.findBiName(principal.getName());
-          model.addAttribute("userInfo", user);
+        User user = userService.findByName(principal.getName());
+        model.addAttribute("userInfo", user);
         return "index";
     }
 
     @GetMapping("/admin")
     public String admin(Model model) {
-          model.addAttribute("allUsers", userService.getAllUsers());
+        model.addAttribute("allUsers", userService.getAllUsers());
         return "admin/users";
     }
 
     @GetMapping("admin/{id}")
-    public String show(@PathVariable("id") Long id, Model model){
-          model.addAttribute("userById", userService.findById(id));
-          return "admin/show";
+    public String show(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("userById", userService.findById(id));
+        return "admin/show";
     }
 
     @GetMapping("admin/new")
-    public String newUser(@ModelAttribute("newUser") User user){
-          return "admin/new";
+    public String newUser(@ModelAttribute("newUser") User user) {
+        return "admin/new";
     }
 
     @PostMapping()
@@ -55,14 +55,14 @@ public class AdminController {
     }
 
     @PatchMapping("admin/{id}")
-    public String updated(@ModelAttribute("redirectAll") User user, @PathVariable("id") Long id) {
-        userService.update(user, id);
+    public String updated(@ModelAttribute("redirectAll") User user) {
+        userService.update(user);
         return "redirect:/admin";
     }
 
     @DeleteMapping("admin/{id}")
-    public String delete(@PathVariable("id") Long id){
-        userService.delete(id);
+    public String delete(@PathVariable("id") Long id) {
+        userService.deleteById(id);
         return "redirect:/admin";
     }
 }

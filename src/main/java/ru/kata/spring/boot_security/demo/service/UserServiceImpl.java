@@ -1,16 +1,14 @@
 package ru.kata.spring.boot_security.demo.service;
 
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.dao.UserDAO;
+import ru.kata.spring.boot_security.demo.model.User;
 
-import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserDetailsService {
+public class UserServiceImpl implements UserService {
 
     private final UserDAO userDAO;
 
@@ -19,16 +17,32 @@ public class UserServiceImpl implements UserDetailsService {
     }
 
     @Transactional
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public void deleteById(Long id) {
+        userDAO.deleteById(id);
+    }
 
-        ru.kata.spring.boot_security.demo.model.User user = userDAO.findByName(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("Пользователь не найден");
-        } else {
-            return new User(user.getUsername(), user.getPassword(), user.getAuthorities());
-        }
+    @Transactional
+    public void saveUser(User user) {
+        userDAO.save(user);
+    }
 
+    @Transactional
+    public User findById(Long id) {
+        return userDAO.findById(id).get();
+    }
 
+    @Transactional
+    public List<User> getAllUsers() {
+        return userDAO.findAll();
+    }
+
+    @Transactional
+    public User update(User user) {
+        return userDAO.save(user);
+    }
+
+    @Transactional
+    public User findByName(String name) {
+        return userDAO.findByUsername(name);
     }
 }
